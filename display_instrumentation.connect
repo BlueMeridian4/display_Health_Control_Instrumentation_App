@@ -1,0 +1,54 @@
+title: DISPLAY INSTRUMENTATION
+window_title: null
+logo_path: null
+timeline:
+  show: false
+  display: relative
+  pixels_per_tick: 0.0
+  milestones: []
+streaming:
+  buffer_size: 5000
+  timeline: null
+  playback_speed: null
+  window: null
+  persistence:
+  - enabled: 'true'
+    data_source_rid: null
+    file_path: null
+    streams: []
+python:
+  packages: []
+  wheelhouse: null
+on_load: null
+on_unload: null
+tiles:
+- layout: tabs
+  tabs: []
+left_panel: null
+right_panel: null
+bottom_panel: null
+scene:
+  camera: null
+  initial_camera_zoom: null
+  show_grid: true
+  sea: null
+  terrain: null
+  load_earth: false
+  load_earth_tiles: false
+  load_sun: false
+  load_moon: false
+  load_star_map: false
+  fog: null
+  models: []
+  sensors: []
+  distance_annotations: []
+  waypoints: []
+  pointclouds: []
+  pointcloud_max_screen_area: null
+  overlays:
+  - type: axes
+    opacity: 0.125
+    position: left_bottom
+poster: null
+prompt_windows: []
+mcap_path: null

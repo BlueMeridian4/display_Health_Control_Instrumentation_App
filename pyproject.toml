@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "display-instrumentation"
+version = "0.1.0"
+description = "Display telemetry ingestion to Nominal"
+requires-python = ">=3.10"
+dependencies = [
+    "nominal",
+    "pandas",
+    "python-dotenv",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
