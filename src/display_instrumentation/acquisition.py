@@ -1,18 +1,14 @@
-from __future__ import annotations
 from datetime import datetime
 from typing import List
-from .models import DisplaySample
+
+from .models import Display, DisplaySample
 from .health import compute_health
 
-SAMPLE_PERIOD_S = 2
-
-def collect_samples(displays) -> List[DisplaySample]:
-    samples = []
+def collect_samples(displays: List[Display]) -> List[DisplaySample]:
     now = datetime.utcnow()
+    samples = []
 
     for d in displays:
-        health = compute_health(d.last_cmd_success, d.last_cmd_latency_ms)
-
         samples.append(
             DisplaySample(
                 timestamp=now,
@@ -24,7 +20,10 @@ def collect_samples(displays) -> List[DisplaySample]:
                 uptime_s=d.uptime_s,
                 cmd_latency_ms=d.last_cmd_latency_ms,
                 cmd_success=d.last_cmd_success,
-                health=health,
+                health=compute_health(
+                    d.last_cmd_success,
+                    d.last_cmd_latency_ms,
+                ),
             )
         )
 

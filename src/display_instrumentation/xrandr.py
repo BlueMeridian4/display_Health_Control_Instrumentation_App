@@ -3,31 +3,16 @@ from __future__ import annotations
 import subprocess
 import time
 import re
-from typing import List, Optional
+from typing import Optional, List
+
+from .models import Display
+
 
 # Map physical display names to ddcutil display numbers
 ddc_map = {
     "DP-0": 1,
     "HDMI-0": 2,
 }
-
-class Display:
-    def __init__(self, name: str, is_internal: bool):
-        self.name = name
-        self.is_internal = is_internal
-        self.connected = False
-        self.brightness_percent: Optional[int] = None
-        self.refresh_rate_hz: Optional[float] = None
-        self.uptime_s: float = 0.0
-        self.last_cmd_latency_ms: Optional[float] = None
-        self.last_cmd_success: bool = False
-
-    def __repr__(self) -> str:
-        return (
-            f"<Display {self.name} connected={self.connected} "
-            f"brightness={self.brightness_percent} "
-            f"refresh={self.refresh_rate_hz}Hz>"
-        )
 
 
 def parse_xrandr() -> List[Display]:
@@ -45,8 +30,12 @@ def parse_xrandr() -> List[Display]:
         if " connected" in line:
             name = line.split()[0]
             is_internal = name.startswith("eDP")
-            current_display = Display(name, is_internal)
-            current_display.connected = True
+
+            current_display = Display(
+                name=name,
+                is_internal=is_internal,
+                connected=True,
+            )
             displays.append(current_display)
 
         elif current_display and re.match(r"^\s+\d", line):
@@ -60,21 +49,22 @@ def parse_xrandr() -> List[Display]:
 
 def read_brightness(display: Display) -> Optional[int]:
     if display.is_internal:
+        display.last_cmd_success = True
         return None
 
     display_number = ddc_map.get(display.name)
     if display_number is None:
+        display.last_cmd_success = False
         return None
 
-    start_time = time.time()
+    start = time.time()
     result = subprocess.run(
         ["ddcutil", "--display", str(display_number), "getvcp", "10"],
         capture_output=True,
         text=True,
         check=False,
     )
-    latency = (time.time() - start_time) * 1000.0
-    display.last_cmd_latency_ms = latency
+    display.last_cmd_latency_ms = (time.time() - start) * 1000.0
 
     if result.returncode != 0:
         display.last_cmd_success = False
@@ -84,18 +74,13 @@ def read_brightness(display: Display) -> Optional[int]:
 
     for line in result.stdout.splitlines():
         if "current value" in line:
-            value_str = (
-                line.split("current value =")[1]
-                .split(",")[0]
-                .strip()
-            )
-            display.brightness_percent = int(value_str)
+            value = line.split("current value =")[1].split(",")[0].strip()
+            display.brightness_percent = int(value)
             return display.brightness_percent
 
     return None
 
 
-def update_displays(displays: List[Display], sample_period_s: float = 2.0) -> None:
-    for display in displays:
-        read_brightness(display)
-        display.uptime_s += sample_period_s
+def update_display(display: Display, sample_period_s: float) -> None:
+    read_brightness(display)
+    display.uptime_s += sample_period_s
