@@ -6,7 +6,6 @@ from display_instrumentation.sink import NominalSink
 
 SAMPLE_PERIOD_S = 2.0
 
-
 def main():
     displays = parse_xrandr()
     sink = NominalSink()
@@ -25,7 +24,8 @@ def main():
 
     except KeyboardInterrupt:
         print("Stopping acquisition")
-
+    finally:
+        sink.close()
 
 if __name__ == "__main__":
     main()

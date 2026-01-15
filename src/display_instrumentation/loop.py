@@ -16,3 +16,5 @@ def run(sample_period_s: float = 2.0):
         sink.push(samples)
 
         time.sleep(sample_period_s)
+
+    sink.close()

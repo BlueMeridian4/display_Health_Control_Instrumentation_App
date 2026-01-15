@@ -29,13 +29,13 @@ tiles:
     tile:
       layout: pane
       id: 90cb0dca-f75a-4030-97b1-1ccb6ab8d0a2
-      title: Channel Table
+      title: CHANNEL TABLE
       direction: vertical
       should_fill: true
       elements:
       - display: channel_table
         stream_id: ''
-        channels: null
+        channels: []
         height: null
 left_panel: null
 right_panel: null

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import os
-import tempfile
-from typing import List
+from datetime import timedelta
+from typing import Iterable
 
-import pandas as pd
 from dotenv import load_dotenv
 from nominal.core import NominalClient
 
@@ -15,8 +14,7 @@ load_dotenv()
 
 class NominalSink:
     """
-    Uploads display telemetry directly to Nominal Connect
-    using a persistent Asset + Dataset.
+    Streams display telemetry to Nominal using a persistent Asset + Dataset.
     """
 
     DATASET_REFNAME = "display_telemetry"
@@ -37,6 +35,12 @@ class NominalSink:
 
         self.asset = self._get_or_create_asset()
         self.dataset = self._get_or_create_dataset()
+
+        # Keep a persistent write stream (important for streaming workloads)
+        self.stream = self.dataset.get_write_stream(
+            max_wait=timedelta(seconds=1)
+        )
+        self.stream.__enter__()
 
     # ---------- Asset ----------
 
@@ -66,28 +70,79 @@ class NominalSink:
             dataset = self.client.create_dataset(
                 name="Display Telemetry",
                 description="Brightness, refresh rate, health, command latency",
+                labels=["display", "telemetry", "streaming"],
+                properties={"source": "xrandr + ddcutil"},
+                prefix_tree_delimiter=".",
             )
             self.asset.add_dataset(self.DATASET_REFNAME, dataset)
             return dataset
 
-    # ---------- Upload ----------
+    # ---------- Streaming Upload ----------
 
-    def push(self, samples: List[DisplaySample]) -> None:
-        if not samples:
-            return
+    def push(self, samples: Iterable[DisplaySample]) -> None:
+        """
+        Stream samples to Nominal.
+        """
+        for s in samples:
+            ts = s.timestamp
 
-        df = pd.DataFrame([s.__dict__ for s in samples])
+            # Tag by display so multiple monitors coexist cleanly
+            tags = {"display": s.display_name}
 
-        # Nominal requires string or float columns only
-        df["timestamp"] = df["timestamp"].astype(str)
-
-        with tempfile.NamedTemporaryFile(
-            suffix=".csv", delete=False
-        ) as tmp:
-            df.to_csv(tmp.name, index=False)
-
-            self.dataset.add_tabular_data(
-                path=tmp.name,
-                timestamp_column="timestamp",
-                timestamp_type="iso_8601",
+            self.stream.enqueue(
+                "display.connected",
+                ts,
+                float(s.connected),
+                tags=tags,
             )
+
+            if s.brightness_percent is not None:
+                self.stream.enqueue(
+                    "display.brightness_percent",
+                    ts,
+                    float(s.brightness_percent),
+                    tags=tags,
+                )
+
+            if s.refresh_rate_hz is not None:
+                self.stream.enqueue(
+                    "display.refresh_rate_hz",
+                    ts,
+                    s.refresh_rate_hz,
+                    tags=tags,
+                )
+
+            self.stream.enqueue(
+                "display.uptime_s",
+                ts,
+                s.uptime_s,
+                tags=tags,
+            )
+
+            if s.cmd_latency_ms is not None:
+                self.stream.enqueue(
+                    "display.cmd_latency_ms",
+                    ts,
+                    s.cmd_latency_ms,
+                    tags=tags,
+                )
+
+            self.stream.enqueue(
+                "display.cmd_success",
+                ts,
+                float(s.cmd_success),
+                tags=tags,
+            )
+
+            # String channel
+            self.stream.enqueue(
+                "display.health",
+                ts,
+                s.health,
+                tags=tags,
+            )
+
+    # ---------- Shutdown ----------
+
+    def close(self):
+        self.stream.__exit__(None, None, None)
