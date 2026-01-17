@@ -11,12 +11,13 @@ from .models import DisplaySample
 
 load_dotenv()
 
+
 class NominalSink:
     """
     Streams display telemetry to Nominal using a persistent Asset + Dataset.
     """
 
-    DATASET_REFNAME = "display_telemetry"
+    DATASET_REFNAME = "Asset Test Dataset"  # "display_telemetry"
 
     def __init__(self):
         token = os.environ.get("NOMINAL_API_KEY")
@@ -44,7 +45,7 @@ class NominalSink:
     # ---------- Asset ----------
 
     def _get_or_create_asset(self):
-        name = "Linux Display Workstation"
+        name = "Test_1" # "Linux Display Workstation"
 
         assets = self.client.search_assets(properties={"device": "display_host"})
         if assets:
@@ -67,7 +68,7 @@ class NominalSink:
             return self.asset.get_dataset(self.DATASET_REFNAME)
         except ValueError:
             dataset = self.client.create_dataset(
-                name="Display Telemetry",
+                name="Asset Test Dataset", # "Display Telemetry"
                 description="Brightness, refresh rate, health, command latency",
                 labels=["display", "telemetry", "streaming"],
                 properties={"source": "xrandr + ddcutil"},
@@ -86,60 +87,61 @@ class NominalSink:
             ts = s.timestamp
 
             # Tag by display so multiple monitors coexist cleanly
-            display_tag = {"display_id": s.display_name}
+            tags = {"display": s.display_name}
 
             self.stream.enqueue(
-                channel_name="display.connected",
-                timestamp=ts,
-                value=float(s.connected),
-                tags=display_tag,
+                "display.connected",
+                ts,
+                float(s.connected),
+                tags=tags,
             )
 
             if s.brightness_percent is not None:
                 self.stream.enqueue(
-                    channel_name="display.brightness_percent",
-                    timestamp=ts,
-                    value=float(s.brightness_percent),
-                    tags=display_tag,
+                    "display.brightness_percent",
+                    ts,
+                    float(s.brightness_percent),
+                    tags=tags,
                 )
 
             if s.refresh_rate_hz is not None:
                 self.stream.enqueue(
-                    channel_name="display.refresh_rate_hz",
-                    timestamp=ts,
-                    value=s.refresh_rate_hz,
-                    tags=display_tag,
+                    "display.refresh_rate_hz",
+                    ts,
+                    s.refresh_rate_hz,
+                    tags=tags,
                 )
 
             self.stream.enqueue(
-                channel_name="display.uptime_s",
-                timestamp=ts,
-                value=s.uptime_s,
-                tags=display_tag,
+                "display.uptime_s",
+                ts,
+                s.uptime_s,
+                tags=tags,
             )
 
             if s.cmd_latency_ms is not None:
                 self.stream.enqueue(
-                    channel_name="display.cmd_latency_ms",
-                    timestamp=ts,
-                    value=s.cmd_latency_ms,
-                    tags=display_tag,
+                    "display.cmd_latency_ms",
+                    ts,
+                    s.cmd_latency_ms,
+                    tags=tags,
                 )
 
             self.stream.enqueue(
-                channel_name="display.cmd_success",
-                timestamp=ts,
-                value=float(s.cmd_success),
-                tags=display_tag,
+                "display.cmd_success",
+                ts,
+                float(s.cmd_success),
+                tags=tags,
             )
 
             # String channel
             self.stream.enqueue(
-                channel_name="display.health",
-                timestamp=ts,
-                value=s.health,
-                tags=display_tag,
+                "display.health",
+                ts,
+                s.health,
+                tags=tags,
             )
+        self.stream.flush()
 
     # ---------- Shutdown ----------
 

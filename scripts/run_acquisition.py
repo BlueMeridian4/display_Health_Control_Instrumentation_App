@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+
 import time
 
 from display_instrumentation.xrandr import parse_xrandr, update_display
@@ -19,6 +24,18 @@ def main():
 
             samples = collect_samples(displays)
             sink.push(samples)
+
+            for s in samples:
+                print(
+                    f"{s.timestamp.isoformat()} "
+                    f"{s.display_name} "
+                    f"connected={s.connected} "
+                    f"brightness={s.brightness_percent} "
+                    f"refresh={s.refresh_rate_hz} "
+                    f"latency={s.cmd_latency_ms} "
+                    f"health={s.health}"
+                )
+
 
             time.sleep(SAMPLE_PERIOD_S)
 

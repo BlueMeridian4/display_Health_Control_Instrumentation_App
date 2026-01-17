@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from .models import Display, DisplaySample
 from .health import compute_health
 
 def collect_samples(displays: List[Display]) -> List[DisplaySample]:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     samples = []
 
     for d in displays:
@@ -26,5 +26,5 @@ def collect_samples(displays: List[Display]) -> List[DisplaySample]:
                 ),
             )
         )
-
+        
     return samples
