@@ -12,6 +12,7 @@ from .models import Display
 ddc_map = {
     "DP-0": 1,
     "HDMI-0": 2,
+    "DP-4": 3,
 }
 
 

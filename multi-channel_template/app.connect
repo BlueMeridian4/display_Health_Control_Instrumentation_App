@@ -1,0 +1,336 @@
+title: DISPLAY INSTRUMENTATION
+window_title: null
+logo_path: null
+timeline:
+  show: false
+  display: relative
+  pixels_per_tick: 0.0
+  milestones: []
+streaming:
+  buffer_size: 5000
+  timeline: null
+  playback_speed: null
+  window: null
+  persistence:
+  - enabled: 'false'
+    data_source_rid: null
+    file_path: null
+    streams:
+    - id: display
+      tags: {}
+python:
+  packages: []
+  wheelhouse: null
+on_load: null
+on_unload: null
+tiles:
+- layout: grid
+  rows:
+  - height: 0.8
+    columns:
+    - width: 1.0
+      tile:
+        layout: grid
+        rows:
+        - height: 1.0
+          columns:
+          - width: 0.55
+            tile:
+              layout: tabs
+              tabs:
+              - title: Live Telemetry
+                allow_popout: true
+                tile:
+                  layout: pane
+                  id: 075c31bf-ae4c-4076-b198-b837265e50e1
+                  title: null
+                  direction: vertical
+                  should_fill: false
+                  elements:
+                  - plot: line
+                    title: Display Brightness (%)
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.brightness_percent
+                    - External_Display_1.brightness_percent
+                    - External_Display_2.brightness_percent
+                    colors: []
+                    color: null
+                    show_picker: true
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: true
+                    x_label: null
+                    y_label: Brightness (%)
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+                  - plot: line
+                    title: Refresh Rate (Hz)
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.refresh_rate_hz
+                    - External_Display_1.refresh_rate_hz
+                    - External_Display_2.refresh_rate_hz
+                    colors: []
+                    color: null
+                    show_picker: true
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: true
+                    x_label: null
+                    y_label: Hz
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+                  - plot: line
+                    title: Display Uptime
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.uptime_s
+                    - External_Display_1.uptime_s
+                    - External_Display_2.uptime_s
+                    colors: []
+                    color: null
+                    show_picker: true
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: true
+                    x_label: null
+                    y_label: Seconds
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+          - width: 0.45
+            tile:
+              layout: tabs
+              tabs:
+              - title: Health & Control
+                allow_popout: true
+                tile:
+                  layout: pane
+                  id: 8d71b3df-b99f-4b22-883c-8d7074d67534
+                  title: null
+                  direction: vertical
+                  should_fill: false
+                  elements:
+                  - plot: line
+                    title: Command Latency
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.cmd_latency_ms
+                    - External_Display_1.cmd_latency_ms
+                    - External_Display_2.cmd_latency_ms
+                    colors: []
+                    color: null
+                    show_picker: true
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: true
+                    x_label: null
+                    y_label: Latency (ms)
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+                  - plot: line
+                    title: Command Success
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.cmd_success
+                    - External_Display_1.cmd_success
+                    - External_Display_2.cmd_success
+                    colors: []
+                    color: null
+                    show_picker: false
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: false
+                    x_label: null
+                    y_label: Success (1 = OK)
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+                  - plot: line
+                    title: Display Health
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.health
+                    - External_Display_1.health
+                    - External_Display_2.health
+                    colors: []
+                    color: null
+                    show_picker: false
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: false
+                    x_label: null
+                    y_label: Health State
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+                  - input: number
+                    id: sample_period_s
+                    label: Sample Period (seconds)
+                    default: 2.0
+                    width: null
+                    auto_highlight: false
+                  - input: checkbox
+                    id: disk_logging
+                    label: Enable Local Disk Logging
+                    default: true
+                    on_toggle_message: null
+                  - input: checkbox
+                    id: stream_to_nominal
+                    label: Stream to Nominal
+                    default: true
+                    on_toggle_message: null
+                  - input: text
+                    id: dataset_rid
+                    label: Dataset RID (optional)
+                    default: ''
+                    width: null
+                    private: false
+                    auto_highlight: false
+              - title: Debug
+                allow_popout: true
+                tile:
+                  layout: pane
+                  id: 19547113-6eab-40af-b5a7-355040c9132a
+                  title: null
+                  direction: vertical
+                  should_fill: false
+                  elements:
+                  - plot: line
+                    title: Connected Flag
+                    stream_id: display
+                    channels:
+                    - Built-In_Display.connected
+                    - External_Display_1.connected
+                    - External_Display_2.connected
+                    colors: []
+                    color: null
+                    show_picker: false
+                    show_legend: true
+                    legend_placement: bottom_left
+                    show_cursor_values: false
+                    x_label: null
+                    y_label: Connected (1 = yes)
+                    x_format: timestamp
+                    x_time_display: Local
+                    x_scale: linear
+                    y_scale: linear
+                    height: null
+                    hide_grid: false
+                    hide_axes: false
+                    y_bounds: null
+                    time_window: null
+                    allow_scroll: false
+                    secondary_axis: null
+                    warning_threshold: null
+                    critical_threshold: null
+                    regions: null
+                    x_spacer_power: null
+                    y_spacer_power: null
+  - height: 0.2
+    columns:
+    - width: 1.0
+      tile:
+        layout: pane
+        id: 37cb24a9-8194-43bd-bf60-aa3dcb353cfc
+        title: null
+        direction: vertical
+        should_fill: false
+        elements:
+        - controls: script_table
+          scripts:
+          - id: null
+            label: Display Telemetry Agent
+            path: ../scripts/run_acquisition.py
+            args: []
+            max_log_lines: 10000
+          show_output_column: true
+left_panel: null
+right_panel: null
+bottom_panel: null
+scene: null
+poster: null
+prompt_windows: []
+mcap_path: null
