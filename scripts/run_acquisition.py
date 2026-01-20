@@ -60,9 +60,9 @@ def health_to_float(health):
     }.get(health, -1.0)
 
 CONNECTOR_TO_LABEL = {
-    "DP-0": "Built-In_Display",
+    "DP-0": "External_Display_2",
     "HDMI-0": "External_Display_1",
-    "DP-4": "External_Display_2",
+    "DP-4": "Built-In_Display",
 }
 
 # ======================

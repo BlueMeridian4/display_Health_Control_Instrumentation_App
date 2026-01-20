@@ -17,15 +17,44 @@ except Exception:
 
 from .models import DisplaySample
 
+# ======================
+# Display Label Mapping
+# ======================
+
+CONNECTOR_TO_LABEL = {
+    "DP-0": "External_Display_2",
+    "HDMI-0": "External_Display_1",
+    "DP-4": "Built-In_Display",
+}
+
+
+def sanitize(value, default=0.0) -> float:
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def health_to_float(health: str) -> float:
+    return {
+        "OK": 1.0,
+        "DEGRADED": 0.5,
+        "FAILED": 0.0,
+        "ERROR": 0.0,
+        "UNKNOWN": -1.0,
+    }.get(health, -1.0)
+
 
 class NominalSink:
     DATASET_REFNAME = "Linux Display Telemetry"
 
     def __init__(self):
+        self.client = None
         self.stream = None
 
         if NominalClient is None:
-            self.client = None
             return
 
         token = os.environ.get("NOMINAL_API_KEY")
@@ -33,7 +62,6 @@ class NominalSink:
         workspace_rid = os.environ.get("NOMINAL_WORKSPACE_RID")
 
         if not all([token, api_url, workspace_rid]):
-            self.client = None
             return
 
         self.client = NominalClient.from_token(
@@ -49,6 +77,10 @@ class NominalSink:
             max_wait=timedelta(seconds=1)
         )
         self.stream.__enter__()
+
+    # ======================
+    # Nominal Setup Helpers
+    # ======================
 
     def _get_or_create_asset(self):
         assets = self.client.search_assets(properties={"device": "display_host"})
@@ -74,32 +106,67 @@ class NominalSink:
             self.asset.add_dataset(self.DATASET_REFNAME, dataset)
             return dataset
 
+    # ======================
+    # Streaming
+    # ======================
+
     def push(self, samples: Iterable[DisplaySample]) -> None:
         if self.stream is None:
             return
 
         for s in samples:
             ts = s.timestamp
-            tags = {"display": s.display_name}
 
-            self.stream.enqueue("display.connected", ts, float(s.connected), tags=tags)
-            self.stream.enqueue("display.uptime_s", ts, s.uptime_s, tags=tags)
-            self.stream.enqueue("display.cmd_success", ts, float(s.cmd_success), tags=tags)
-            self.stream.enqueue("display.health", ts, s.health, tags=tags)
+            label = CONNECTOR_TO_LABEL.get(
+                s.display_name,
+                f"Unknown_{s.display_name}",
+            )
+
+            base = label  # channel prefix
+
+            self.stream.enqueue(
+                f"{base}.connected",
+                ts,
+                sanitize(s.connected),
+            )
+
+            self.stream.enqueue(
+                f"{base}.uptime_s",
+                ts,
+                sanitize(s.uptime_s),
+            )
+
+            self.stream.enqueue(
+                f"{base}.cmd_success",
+                ts,
+                sanitize(s.cmd_success),
+            )
+
+            self.stream.enqueue(
+                f"{base}.health",
+                ts,
+                health_to_float(s.health),
+            )
 
             if s.brightness_percent is not None:
                 self.stream.enqueue(
-                    "display.brightness_percent", ts, s.brightness_percent, tags=tags
+                    f"{base}.brightness_percent",
+                    ts,
+                    sanitize(s.brightness_percent),
                 )
 
             if s.refresh_rate_hz is not None:
                 self.stream.enqueue(
-                    "display.refresh_rate_hz", ts, s.refresh_rate_hz, tags=tags
+                    f"{base}.refresh_rate_hz",
+                    ts,
+                    sanitize(s.refresh_rate_hz),
                 )
 
             if s.cmd_latency_ms is not None:
                 self.stream.enqueue(
-                    "display.cmd_latency_ms", ts, s.cmd_latency_ms, tags=tags
+                    f"{base}.cmd_latency_ms",
+                    ts,
+                    sanitize(s.cmd_latency_ms),
                 )
 
         self.stream.flush()
@@ -107,3 +174,4 @@ class NominalSink:
     def close(self):
         if self.stream:
             self.stream.__exit__(None, None, None)
+            self.stream = None
