@@ -81,7 +81,7 @@ python scripts/run_acquisition.py
 4. Click `Run All` in bottom left corner to begin live stream of telemetry data
 
 - By default, the agent:
-  - Streams telemetry to Nominal Connect App
+  - Streams telemetry to Nominal Connect
   - Logs to telemetry.log (can be disabled via disk_logging in Connect app)
   - Samples every 2 seconds (configurable via sample_period_s)
 
