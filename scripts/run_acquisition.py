@@ -59,12 +59,6 @@ def health_to_float(health):
         "UNKNOWN": -1.0,
     }.get(health, -1.0)
 
-CONNECTOR_TO_LABEL = {
-    "DP-0": "External_Display_2",
-    "HDMI-0": "External_Display_1",
-    "DP-4": "Built-In_Display",
-}
-
 # ======================
 # Acquisition Worker
 # ======================
@@ -75,22 +69,40 @@ def acquisition_loop(client, sink, sample_period_s, disk_logging):
 
     logger.info("Acquisition loop started")
 
+    # ---- Persistent display registry ----
+    # key: connector name -> Display instance
+    known_displays = {}
+
     while not stop_event.is_set():
         try:
             loop_start = time.time()
             logger.info("Acquisition tick")
 
-            # ---- Discover displays (ONCE per tick) ----
-            displays = parse_xrandr()
+            detected = parse_xrandr()
+            detected_names = {d.name for d in detected}
+            displays = []
+
+            # ---- Update or create displays ----
+            for d in detected:
+                if d.name in known_displays:
+                    existing = known_displays[d.name]
+                    existing.connected = True
+                    existing.refresh_rate_hz = d.refresh_rate_hz
+                    displays.append(existing)
+                else:
+                    known_displays[d.name] = d
+                    displays.append(d)
+
+            # ---- Handle disconnects ----
+            for name, d in known_displays.items():
+                if name not in detected_names:
+                    d.connected = False
+                    d.uptime_s = 0.0
 
             if not displays:
                 logger.warning("No displays detected")
                 time.sleep(sample_period_s)
                 continue
-
-            # ---- Assign stable labels ----
-            for d in displays:
-                d.label = CONNECTOR_TO_LABEL.get(d.name, f"Unknown_{d.name}")
 
             # ---- Update + sample ----
             for d in displays:

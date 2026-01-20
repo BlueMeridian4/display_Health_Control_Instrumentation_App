@@ -22,6 +22,7 @@ def collect_samples(displays: List[Display]) -> List[DisplaySample]:
             DisplaySample(
                 timestamp=now,
                 display_name=d.name,
+                label=d.label,              
                 is_internal=d.is_internal,
                 connected=d.connected,
                 brightness_percent=d.brightness_percent,

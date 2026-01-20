@@ -15,6 +15,13 @@ ddc_map = {
     "DP-4": 3,
 }
 
+XRANDR_HEADER_RE = re.compile(
+    r'^(?P<name>\S+)\s+connected'
+    r'(?:\s+primary)?'
+    r'(?:\s+(?P<mode>\d+x\d+)\+(?P<x>\d+)\+(?P<y>\d+))?'
+)
+
+XRANDR_MODE_RE = re.compile(r'^\s+\d+x\d+.*\*')
 
 def parse_xrandr() -> List[Display]:
     result = subprocess.run(
@@ -24,28 +31,41 @@ def parse_xrandr() -> List[Display]:
         check=False,
     )
 
-    displays: List[Display] = []
-    current_display: Optional[Display] = None
+    displays: List[tuple[int, Display]] = []
+    current: Optional[Display] = None
+    current_x = 0
 
     for line in result.stdout.splitlines():
-        if " connected" in line:
-            name = line.split()[0]
-            is_internal = name.startswith("eDP")
+        header = XRANDR_HEADER_RE.match(line)
+        if header:
+            name = header.group("name")
+            is_internal = name.startswith(("eDP", "LVDS"))
+            current_x = int(header.group("x") or 0)
 
-            current_display = Display(
+            current = Display(
                 name=name,
                 is_internal=is_internal,
                 connected=True,
             )
-            displays.append(current_display)
+            displays.append((current_x, current))
+            continue
 
-        elif current_display and re.match(r"^\s+\d", line):
-            match = re.search(r"(\d+(?:\.\d+)?)\*", line)
-            if match:
-                current_display.refresh_rate_hz = float(match.group(1))
-                current_display = None
+        # ---- Active mode line (contains refresh rate) ----
+        if current and XRANDR_MODE_RE.match(line):
+            rate_match = re.search(r'(\d+(?:\.\d+)?)\*', line)
+            if rate_match:
+                current.refresh_rate_hz = float(rate_match.group(1))
+            current = None  # done with this display
 
-    return displays
+    # ---- Stable left → right ordering ----
+    displays.sort(key=lambda item: item[0])
+
+    final: List[Display] = []
+    for idx, (_, d) in enumerate(displays, start=1):
+        d.label = f"Display_{idx}"
+        final.append(d)
+
+    return final
 
 
 def read_brightness(display: Display) -> Optional[int]:

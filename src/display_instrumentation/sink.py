@@ -20,14 +20,6 @@ from .models import DisplaySample
 # ======================
 # Display Label Mapping
 # ======================
-
-CONNECTOR_TO_LABEL = {
-    "DP-0": "External_Display_2",
-    "HDMI-0": "External_Display_1",
-    "DP-4": "Built-In_Display",
-}
-
-
 def sanitize(value, default=0.0) -> float:
     if value is None:
         return default
@@ -116,12 +108,7 @@ class NominalSink:
 
         for s in samples:
             ts = s.timestamp
-
-            label = CONNECTOR_TO_LABEL.get(
-                s.display_name,
-                f"Unknown_{s.display_name}",
-            )
-
+            label = s.label
             base = label  # channel prefix
 
             self.stream.enqueue(

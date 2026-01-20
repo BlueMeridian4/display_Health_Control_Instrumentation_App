@@ -51,9 +51,12 @@ tiles:
                     title: Display Brightness (%)
                     stream_id: display
                     channels:
-                    - Built-In_Display.brightness_percent
-                    - External_Display_1.brightness_percent
-                    - External_Display_2.brightness_percent
+                    - Display_1.brightness_percent
+                    - Display_2.brightness_percent
+                    - Display_3.brightness_percent
+                    - Display_4.brightness_percent
+                    - Display_5.brightness_percent
+                    - Display_6.brightness_percent
                     colors: []
                     color: null
                     show_picker: true
@@ -82,9 +85,12 @@ tiles:
                     title: Refresh Rate (Hz)
                     stream_id: display
                     channels:
-                    - Built-In_Display.refresh_rate_hz
-                    - External_Display_1.refresh_rate_hz
-                    - External_Display_2.refresh_rate_hz
+                    - Display_1.refresh_rate_hz
+                    - Display_2.refresh_rate_hz
+                    - Display_3.refresh_rate_hz
+                    - Display_4.refresh_rate_hz
+                    - Display_5.refresh_rate_hz
+                    - Display_6.refresh_rate_hz
                     colors: []
                     color: null
                     show_picker: true
@@ -113,9 +119,12 @@ tiles:
                     title: Display Uptime
                     stream_id: display
                     channels:
-                    - Built-In_Display.uptime_s
-                    - External_Display_1.uptime_s
-                    - External_Display_2.uptime_s
+                    - Display_1.uptime_s
+                    - Display_2.uptime_s
+                    - Display_3.uptime_s
+                    - Display_4.uptime_s
+                    - Display_5.uptime_s
+                    - Display_6.uptime_s
                     colors: []
                     color: null
                     show_picker: true
@@ -157,9 +166,12 @@ tiles:
                     title: Command Latency
                     stream_id: display
                     channels:
-                    - Built-In_Display.cmd_latency_ms
-                    - External_Display_1.cmd_latency_ms
-                    - External_Display_2.cmd_latency_ms
+                    - Display_1.cmd_latency_ms
+                    - Display_2.cmd_latency_ms
+                    - Display_3.cmd_latency_ms
+                    - Display_4.cmd_latency_ms
+                    - Display_5.cmd_latency_ms
+                    - Display_6.cmd_latency_ms
                     colors: []
                     color: null
                     show_picker: true
@@ -188,9 +200,12 @@ tiles:
                     title: Command Success
                     stream_id: display
                     channels:
-                    - Built-In_Display.cmd_success
-                    - External_Display_1.cmd_success
-                    - External_Display_2.cmd_success
+                    - Display_1.cmd_success
+                    - Display_2.cmd_success
+                    - Display_3.cmd_success
+                    - Display_4.cmd_success
+                    - Display_5.cmd_success
+                    - Display_6.cmd_success
                     colors: []
                     color: null
                     show_picker: false
@@ -219,9 +234,12 @@ tiles:
                     title: Display Health
                     stream_id: display
                     channels:
-                    - Built-In_Display.health
-                    - External_Display_1.health
-                    - External_Display_2.health
+                    - Display_1.health
+                    - Display_2.health
+                    - Display_3.health
+                    - Display_4.health
+                    - Display_5.health
+                    - Display_6.health
                     colors: []
                     color: null
                     show_picker: false
@@ -282,9 +300,12 @@ tiles:
                     title: Connected Flag
                     stream_id: display
                     channels:
-                    - Built-In_Display.connected
-                    - External_Display_1.connected
-                    - External_Display_2.connected
+                    - Display_1.connected
+                    - Display_2.connected
+                    - Display_3.connected
+                    - Display_4.connected
+                    - Display_5.connected
+                    - Display_6.connected
                     colors: []
                     color: null
                     show_picker: false
